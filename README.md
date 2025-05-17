@@ -86,3 +86,4 @@ Roll number acts as the unique ID for searching, updating, and deleting.
 This project demonstrates practical file handling, string manipulation, and structuring console applications in C. It’s a perfect foundational step for real-world C development.
 
 ---
+"# StudentManagementSystem" 
