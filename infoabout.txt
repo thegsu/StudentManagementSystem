@@ -1,0 +1,202 @@
+<stdmng.c>
+1.Doubt no.1 :Why the Hell fgets not taking any input?
+Code:
+    //student input
+    printf("Enter Roll no :");
+    scanf("%d", &s.id);
+
+    printf("\nEnter Name : ");
+    fgets(s.name, sizeof(s.name), stdin);
+
+Solution :The problem is arrising because of the scanf function.
+The scanf() function takes an input lets's say, 
+                Enter Roll no : 1 <Enter>
+After inputting the value i hit enter to store the vale in the variable s.id.
+NOW, Here the complexity begins. the hitting of "Enter" creates a Newline 
+character(\n)--------------> '1' , '\n'
+
+Then, the '1' will be stored in the variable but the newline character(\n) 
+can not be stored in to variable s.id due to %d format specifier, Hence can 
+not be consumed by scanf. and and and NOW, the newline character will be 
+stored in the BUFFER.
+After this, Next printf will be compiled and them fgets will be compiled anf 
+our problem will arrise.
+because, the fgets function reads a string till newline character or reaches
+Buffer limit, Here we already have a Newlie character due to our honourable
+scanf function, then our fgets function reads it and returns a new line 
+character instead of actual inputs.
+
+2.What is Buffer?
+Ans : A buffer is a temporary storage area in memory where data is held
+before it's processed.
+    *When you type something and press enter.
+    *The Entire Line (Including \n) goes into input buffer.
+    *The functions like fscanf() or fgets() read data from this Buffer.
+
+3. WHY getchar()?
+Ans : getchar() function is used to read one character at a time.
+Here getchar() used due to clear the input Buffer of  the newline character.
+to resolve the problem of **DOUBT NO.1**
+Code:
+    //student input
+    printf("Enter Roll no :");
+    scanf("%d", &s.id);
+
+    printf("\nEnter Name : ");
+    getchar();//Eats up the \n and clear the input buffer.
+    fgets(s.name, sizeof(s.name), stdin);
+
+
+4.Why we dont need getchar() after using fgets? although i pressed enter 
+after the input in fgets, the enter shoulf generate a newline character naa?
+Ans : we dont have to use getchar() after fgets() because, the fgets() 
+function already reads the newline character and the newline character(\n) 
+never goes to input buffer and hence next fgets() functions will not face any 
+problems. for EXAMPLE,
+            printf("Enter name : ");    
+            fgets(Array, size, stdin);------> Jishu <ENTER>
+
+            what it reads ------------------> "Jishu\n"
+
+This just creates some unwanted errors like, missing of some characters etc.
+
+<viewallstd function>
+1.What is the use of viewallstd function?
+Ans : This function is used to see the available data of the students in the file "students.txt",
+in the terminal.
+so, we have to use the functions like,
+                                    1.fgets(): Which will fetch the data from the from the file.
+                                    2.printf(): Display the available data in the terminal.
+2. CODE :
+
+        char str[sizeof("student.txt")];
+        fgets(str, sizeof("student.txt"), fp);
+        what's wrong with this?
+Ans : The syntax of fgets()is : fgets(string, size of the string, FILE*ptr);
+
+                                string : const char *NAME;: A character pointer. or simply a string.where the fetch data 
+                                will be stored.
+                                size of the string : size of how long a string should be fetched from the file.
+                                FILE*ptr : file pointer to the file.
+
+    NOW, in the code i declared the size of the str character array as,
+                                                                    char str[sizeof("student.txt")];
+                                                                    i thought it will just take up 
+                                                                    the size of the actual content
+                                                                    of the file "student.txt".
+    But, i was wrong, it will not take the size of the content inside the "student.txt" instead it will take the size of the
+    length of the string "student.txt", which is 12 with NULL termianed character, Which will only be able to fetch data 
+    upto one line only or 12 character long string.
+    and this fault is also done in the fgets, where i have to put the size of how many character it should fetch or read 
+    from the file. i put **fget(...,sizeof("student.txt"),...)** same to same fault. it will read only 12 character long 
+    string.
+
+3. When the file pointer fp == NULL happens?
+Ans : The file  pointer fp == NULL happens when the file could not be opened successfully.
+this occurs in the fopen() function, the fopen()function returns the NULL in the following situations :
+        1.File does not exist.
+        2.permission denied.
+        3.invalid path or file name.
+
+4.How does fgets() function work?
+Ans : Used to read a LINE OF TEXT from a FILE or INPUT STREAM.
+it reads atmost n-1 characters, stores them in a character array, 
+and appends a NULL terminated character at the end of the array to make it a proper c string.
+SyNTAX:
+        char *fgets(char *str, int n, FILE *stream);
+
+        str : ponter to a character array where the string will be stored.
+        n : Maximum number of characters to read, Including the Null terminated character.
+        stream : Read from. (like stdin for keyboard input or file pointer to a file for the file content input.) 
+
+5.When fgets() function returns NULL ?
+Ans : fgets() function can only return NUll value in two main reasons :
+
+        1.End Of the File(EOF) is reached.
+        2.An error occurs while reading the file.
+
+6. s.name[strcspn(s.name, "\n")] = '\0' What is this?
+Ans : ok, i want to store the data of one student in one line but due to the fgets() function, it generates a \n character after every call to create a perfect string.thats why the data is stored in multiple lines.
+to solve this problem we have to remove the \n character from the end of the string inserted by the fgets().
+to do that we have to take help of a function which can give us the position of the \n character. and then we can just exchange the value of that position with '\0' a nullc character. and the \n will be removed.
+
+                        size_t pos = strcspn(s.name, "\n");//takes the position where the "\n" is available in the str string
+                        s.name[pos] = '\0';// "\n" replaced with '\0' character, "\n" is REMOVED.
+
+        s.name[strcspn(s.name, "\n")] = '\0'// this is the one-liner of the above code. this is called helper box.
+
+
+1. What sscanf() function returns?
+Ans : The sscanf() function returns, no. of the read characters/string/integers, 
+for example : 
+                sscanf(line,"%s %s %s", name, lastnam, dep);
+                it will read 3 strings in the same order in the syntax from the 
+                line named buffer, and will return 3 if successfull.
+                if not successfull it will return 0.
+                if the buffer limit is reached it will return -1.
+
+2.How the stdsearch works?
+Ans : 
+                        1.while(fgets(line, sizeof(line), fp) != NULL)
+                fgets() reads 1 line at a time from "student.txt" through fp untill the file content ends.
+
+                        2.int parsed = sscanf(line, "%d %s %s %s %s", &roll, name, lastname, dep, course);
+                this line stores the sscanf return value which should be 5.if the line reaad is a valid file.
+                          parsed = 5;
+
+3.STORY OF THIS FUNCTION.
+ANS : i didnot write the code like this before,
+instead of, int parsed = sscanf(line, "%d %s %s %s %s", &roll, name, lastname, dep, course);
+        if (parsed == 5)
+        i did,
+        if(sscanf(line, "%d %s %s %s %s", &roll, name, lastname, dep, course) == 5)
+        {
+                //code
+        }
+        i changed it because it was showing some unwanted errors like,
+        not showing of studentnot found.
+        and i debugged it and found out,
+        that it was due to some invisible garbage values which are present in the "student.txt".
+        when the code is run before, the sscanf fails due to that unexpected line and due to failing the error was coming.
+        then i solved it by storing the value of the sscanf in the parsed and i wrote the  it worked because.
+
+
+1.CODE : 
+while (fgets(line, sizeof(line), fp1) != NULL)
+    {
+        int parsed = sscanf(line, "%d %s %s %s %s", &s.id, s.name, s.lastname, s.dep, s.course);
+        if (parsed == 5)
+        {
+            if (s.id == n)
+            {
+                // Enter Updated Details
+                printf("\nEnter new Name : ");
+                scanf("%s", s.name);
+
+                printf("\nEnter new LastName : ");
+                scanf("%s", s.lastname);
+
+                printf("\nEnter new Department : ");
+                scanf("%s", s.dep);
+
+                printf("\nEnter new Course : ");
+                scanf("%s", s.course);
+
+                fprintf(fp2, "%d %s %s %s %s\n", s.id, s.name, s.lastname, s.dep, s.course);
+                m = 1;
+            }
+            else
+            {
+                //this is for the entire input of the file system.
+                fputs(line, fp2);
+            }
+        }
+    } work step by step.
+    Ans : 
+    1st iteration : fgets() Checked, if (parsed == 5) Checked,if (s.id == n) Checked
+    2nd iteration : fgets() Checked, if (parsed == 5) Checked,if (s.id == n) not Checked, goes to else.
+    3rd iteration : fgets() Checked, if (parsed == 5) Checked,if (s.id == n) not Checked, goes to else.
+    4th iteration : fgets() Checked, if (parsed == 5) Checked,if (s.id == n) not Checked, goes to else.
+    5th iteration : fgets() Checked, if (parsed == 5) Checked,if (s.id == n) not Checked, goes to else.
+    and this logic writes the whole fp1 content in fp2 content.
+
